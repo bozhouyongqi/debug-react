@@ -62,6 +62,7 @@ const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 
 const hasJsxRuntime = (() => {
+    return false;
   if (process.env.DISABLE_NEW_JSX_TRANSFORM === 'true') {
     return false;
   }

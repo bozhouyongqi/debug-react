@@ -79,6 +79,7 @@ Attempted import error: 'DEPRECATED_mountResponderInstance' is not exported from
 
 export * from './forks/ReactFiberHostConfig.dom';
 ```
+
 从注释中可以看出，这个文件实际上react并不会直接引入，会被打包工具依赖相应的宿主环境替换掉。
 
 之后再启动项目，发现会报如下错误
@@ -144,49 +145,159 @@ Failed to compile.
 Attempted import error: 'unstable_flushAllWithoutAsserting' is not exported from 'scheduler' (imported as 'Scheduler').
 ```
 
+#### 修改scheduler/index.js文件
 
+/src/react/packages/scheduler/index.js 修改为
 
+```
+'use strict';
 
+export * from './src/Scheduler';
 
+//添加以下
+export {
+    unstable_flushAllWithoutAsserting,
+    unstable_flushNumberOfYields,
+    unstable_flushExpired,
+    unstable_clearYields,
+    unstable_flushUntilNextPaint,
+    unstable_flushAll,
+    unstable_yieldValue,
+    unstable_advanceTime
+} from './src/SchedulerHostConfig.js';
+```
 
+react/packages/scheduler/src/SchedulerHostConfig.js 修改为
 
+```
 
+// throw new Error('This module must be shimmed by a specific build.');
 
+// 添加以下
+export {
+    unstable_flushAllWithoutAsserting,
+    unstable_flushNumberOfYields,
+    unstable_flushExpired,
+    unstable_clearYields,
+    unstable_flushUntilNextPaint,
+    unstable_flushAll,
+    unstable_yieldValue,
+    unstable_advanceTime
+  } from './forks/SchedulerHostConfig.mock.js';
+  
+  export {
+    requestHostCallback,
+    requestHostTimeout,
+    cancelHostTimeout,
+    shouldYieldToHost,
+    getCurrentTime,
+    forceFrameRate,
+    requestPaint
+  } from './forks/SchedulerHostConfig.default.js';
+```
 
+继续出现错误
+```
+Failed to compile.
 
+Failed to load plugin 'react-internal' declared in 'src/react/.eslintrc.js': Cannot find module 'eslint-plugin-react-internal'
+Require stack:
+- /xxx/learn/debug-react-new/config/__placeholder__.js
+```
 
-=================================
+#### 安装eslint-plugin-react-internal
+这是react在本地安装的，在源码的package中可以看到。但是安装之后依然会报错，这里决定删除这个插件，不进行安装。在debug-react-new/src/react/.eslintrc.js 中的plugins中将其删除。
 
+下面是安装本地react-internals。笔者这里没有安装，直接不使用该插件。
+```
+yarn add link:./src/react/scripts/eslint-rules -D
+```
+
+删除这个插件之后，还是报错：
 ```
 Failed to compile.
 
 ./src/index.js
-Module not found: Can't resolve 'react/jsx-dev-runtime' in '/Users/wangyongqi/baidu/learn/debug-react-new/src'
+Module not found: Can't resolve 'react/jsx-dev-runtime' in '/xxx/learn/debug-react-new/src'
 ```
 
 ### 修复react/jsx-dev-runtime报错
 
 在webpack-config.js中可以看到hasJsxRuntime变量的取值过程，直接在函数中返回false.
 
-修改完之后，还是会报错。
+修改完之后，会报一些react-internal有关的错误。
+
+```
+Line 1:1:  Definition for rule 'react-internal/no-to-warn-dev-within-to-throw' was not found  react-internal/no-to-warn-dev-within-to-throw
+  Line 1:1:  Definition for rule 'react-internal/invariant-args' was not found                  react-internal/invariant-args
+  Line 1:1:  Definition for rule 'react-internal/warning-args' was not found                    react-internal/warning-args
+  Line 1:1:  Definition for rule 'react-internal/no-production-logging' was not found           react-internal/no-production-logging
+
+src/react/packages/react-dom/src/shared/validAriaProperties.js
+  Line 1:1:  Definition for rule 'react-internal/no-primitive-constructors' was not found       react-internal/no-primitive-constructors
+  Line 1:1:  Definition for rule 'react-internal/no-to-warn-dev-within-to-throw' was not found  react-internal/no-to-warn-dev-within-to-throw
+  Line 1:1:
+```
+
+可以到/xxx/learn/debug-react-new/src/react/.eslintrc.js中将react-internal相关的规则都注释掉。
+
+可以看到会继续报如下错误：
+
 ```
 Failed to compile.
 
-src/packages/legacy-events/EventPluginRegistry.js
-  Line 144:7:   '__DEV__' is not defined  no-undef
-  Line 184:42:  '__DEV__' is not defined  no-undef
+src/react/packages/react-dom/src/client/ReactDOM.js
+  Line 241:9:  Definition for rule 'react-internal/no-production-logging' was not found  react-internal/no-production-logging
 
-src/packages/legacy-events/EventPluginUtils.js
-  Line 23:7:   '__DEV__' is not defined  no-undef
-  Line 34:5:   '__DEV__' is not defined  no-undef
-  Line 78:7:   '__DEV__' is not defined  no-undef
-  Line 106:7:  '__DEV__' is not defined  no-undef
-  Line 147:7:  '__DEV__' is not defined  no-undef
+src/react/packages/react-reconciler/src/ReactFiberHostConfig.js
+  Line 10:1:  Definition for rule 'react-internal/invariant-args' was not found  react-internal/invariant-args
+  Line 12:8:  'invariant' is defined but never used                              no-unused-vars
 
-src/packages/legacy-events/EventPropagators.js
-  Line 47:7:  '__DEV__' is not defined  no-undef
+src/react/packages/react-reconciler/src/ReactFiberReconciler.js
+  Line 584:7:  Definition for rule 'react-internal/no-production-logging' was not found  react-internal/no-production-logging
+
 ```
 
+可以到对应的文件中将eslint注释删除掉。
 
+至此，命令行中不会报错误了。但是浏览器中会报错误，提示__DEV__没有定义。这个简单了，在DefinePlugin中定义就行。
+
+#### 设置DefinePlugin插件
+在/xxx/learn/debug-react-new/config/env.js中添加:
+```
+const stringified = {
+    'process.env': Object.keys(raw).reduce((env, key) => {
+      env[key] = JSON.stringify(raw[key]);
+      return env;
+    }, {}),
+    "__DEV__": true,
+    "__PROFILE__": true,
+    "__UMD__": true,
+    "__EXPERIMENTAL__": true
+};
+```
+
+浏览器中还是会报错：
+```
+Uncaught Error: Internal React error: invariant() is meant to be replaced at compile time. There is no runtime version.
+```
+
+#### 修改invariant.js
+/xxx/debug-react-new/src/react/packages/shared/invariant.js
+
+```
+export default function invariant(condition, format, a, b, c, d, e, f) {
+
+    if (condition) {
+        return;
+    }
+  throw new Error(
+    'Internal React error: invariant() is meant to be replaced at compile ' +
+      'time. There is no runtime version.',
+  );
+}
+```
+
+至此，大功告成，终于没有错误了。后面就可以进行本地调试了。
 
 
