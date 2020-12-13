@@ -35,20 +35,24 @@ To create a production build, use yarn build.
 #### clone react源码至src目录下
 这里使用git submodule命令引入react源码作为子模块，以方便后续代码单独管理。
 
-进入src目录，执行 git submodule add git@github.com:facebook/react.git
+进入src目录，执行 git submodule add git@github.com:facebook/react.git。
+
+克隆之后，就可以在src/react中正常切换分支，而不影响主工程。我这里使用v16.13.1版本，因此可以切换至具体的tag.
+
+git checkout tags/v16.13.1 -b v16.13.1
 
 #### 修改webpack.config.js添加alias配置
 
 注释掉原先的alias配置，添加新的，将react等指向本地
 ```
 alias: {
-    'react': path.resolve(__dirname, '../src/packages/react'),
-    'react-dom': path.resolve(__dirname, '../src/packages/react-dom'),
-    'shared': path.resolve(__dirname, '../src/packages/shared'),
-    'react-reconciler': path.resolve(__dirname, '../src/packages/react-reconciler'),
-    "legacy-events": path.resolve(__dirname, "../src/packages/legacy-events"),
-    // 'react-events': path.resolve(__dirname, '../src/packages/events'),
-    // scheduler: path.resolve(__dirname, "../src/packages/scheduler"),
+    'react': path.resolve(__dirname, '../src/react/packages/react'),
+    'react-dom': path.resolve(__dirname, '../src/react/packages/react-dom'),
+    'shared': path.resolve(__dirname, '../src/react/packages/shared'),
+    'react-reconciler': path.resolve(__dirname, '../src/react/packages/react-reconciler'),
+    "legacy-events": path.resolve(__dirname, "../src/react/packages/legacy-events"),
+    // 'react-events': path.resolve(__dirname, '../src/react/packages/events'),
+    // scheduler: path.resolve(__dirname, "../src/react/packages/scheduler"),
 },
 ```
 
