@@ -1,3 +1,4 @@
+import {React} from './adaptation';
 import logo from './logo.svg';
 import './App.css';
 

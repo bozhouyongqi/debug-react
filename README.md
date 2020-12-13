@@ -109,6 +109,29 @@ export {
 ```
 Failed to compile.
 
+Failed to load config "fbjs" to extend from.
+Referenced from: /Users/wangyongqi/baidu/learn/debug-react-new/src/react/.eslintrc.js
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=================================
+
+```
+Failed to compile.
+
 ./src/index.js
 Module not found: Can't resolve 'react/jsx-dev-runtime' in '/Users/wangyongqi/baidu/learn/debug-react-new/src'
 ```
