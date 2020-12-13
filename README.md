@@ -32,8 +32,10 @@ To create a production build, use yarn build.
 #### 清理src目录
 删除测试以及其他文件，只保留App等业务组件。并去除相关引用。
 
-#### 拷贝react源码至src目录下
-我这里拷贝的react 16.13.1的版本，其他版本操作应该差不多，下载源代码，将src下的package目录拷贝到自己项目的src中。这之后需要修改的地方就会比较多。
+#### clone react源码至src目录下
+这里使用git submodule命令引入react源码作为子模块，以方便后续代码单独管理。
+
+进入src目录，执行 git submodule add git@github.com:facebook/react.git
 
 #### 修改webpack.config.js添加alias配置
 
