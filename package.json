@@ -149,6 +149,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-syntax-jsx": "^7.12.1"
+    "@babel/plugin-syntax-jsx": "^7.12.1",
+    "eslint-plugin-no-for-of-loops": "^1.0.1"
   }
 }

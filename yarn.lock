@@ -4466,6 +4466,11 @@ eslint-plugin-jsx-a11y@^6.3.1:
     jsx-ast-utils "^3.1.0"
     language-tags "^1.0.5"
 
+eslint-plugin-no-for-of-loops@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-no-for-of-loops/-/eslint-plugin-no-for-of-loops-1.0.1.tgz#2ee3732d50c642b8d1bfacedbfe3b28f86222369"
+  integrity sha512-uCotzBHt2W+HbLw2srRmqDJHOPbJGzeVLstKh8YyxS3ppduq2P50qdpJfHKoD+UGbnqA/zhy8NRgPH6p0y8bnA==
+
 eslint-plugin-react-hooks@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.2.0.tgz#8c229c268d468956334c943bb45fc860280f5556"

@@ -113,8 +113,36 @@ Failed to load config "fbjs" to extend from.
 Referenced from: /Users/wangyongqi/baidu/learn/debug-react-new/src/react/.eslintrc.js
 ```
 
+#### 关闭ESlint对fbjs,prettier插件的扩展
+清空react源码项目下.eslintrc文件中的extends选项
+```
+extends: [
+    'fbjs',
+    'prettier'
+  ],
+改为extends:[]
+```
 
+依然会继续报错:
+```
+Failed to compile.
 
+Failed to load plugin 'no-for-of-loops' declared in 'src/react/.eslintrc.js': Cannot find module 'eslint-plugin-no-for-of-loops'
+Require stack:
+- /xxx/learn/debug-react-new/config/__placeholder__.js
+```
+
+#### 安装eslint-plugin-no-for-of-loops插件
+
+yarn add eslint-plugin-no-for-of-loops -D
+
+继续报错：
+```
+Failed to compile.
+
+./src/react/packages/react-reconciler/src/ReactFiberWorkLoop.js
+Attempted import error: 'unstable_flushAllWithoutAsserting' is not exported from 'scheduler' (imported as 'Scheduler').
+```
 
 
 
