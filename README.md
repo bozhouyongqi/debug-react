@@ -1,4 +1,9 @@
 [TOC]
+
+工欲善其事，必先利其器。
+
+在学习raect源码时，如果能够在浏览器中单步调试，势必会加深理解。其实可以借助webpack的definePlugin插件将react等指向本地的目录，这样就不会使用node_modules中的react包。
+从而可以在本地调试react源码。
 ### 本地调试react源码步骤
 #### 1. 生成react项目
 可以直接基于react cra cli生成项目，也可以自己基于react,webpack搭建环境，具体可以参考https://github.com/bozhouyongqi/react-redux-demo项目。下述主要针对使用cra的项目。
@@ -29,10 +34,10 @@ Note that the development build is not optimized.
 To create a production build, use yarn build.
 ```
 
-#### 清理src目录
+#### 3.清理src目录
 删除测试以及其他文件，只保留App等业务组件。并去除相关引用。
 
-#### clone react源码至src目录下
+#### 4.clone react源码至src目录下
 这里使用git submodule命令引入react源码作为子模块，以方便后续代码单独管理。
 
 进入src目录，执行 git submodule add git@github.com:facebook/react.git。
@@ -41,7 +46,7 @@ To create a production build, use yarn build.
 
 git checkout tags/v16.13.1 -b v16.13.1
 
-#### 修改webpack.config.js添加alias配置
+#### 5.修改webpack.config.js添加alias配置
 
 注释掉原先的alias配置，添加新的，将react等指向本地
 ```
@@ -64,7 +69,7 @@ Failed to compile.
 Attempted import error: 'DEPRECATED_mountResponderInstance' is not exported from './ReactFiberHostConfig'.
 ```
 
-#### 修改ReactFiberHostConfig文件
+#### 6.修改ReactFiberHostConfig文件
 修改成如下
 ```
 // We expect that our Rollup, Jest, and Flow configurations
@@ -90,7 +95,7 @@ Failed to compile.
 Attempted import error: 'react' does not contain a default export (imported as 'React').
 ```
 
-#### 修改react引用方式
+#### 7.修改react引用方式
 出现上述错误，到源码中查看源码，发现/debug-react-new/src/packages/react/index.js中确实没有默认导出。但是必须保证业务组件中要引入React，因为组件需要用babel-jsx插件进行转换(即使用React.createElement方法)。因此可以添加一个中间模块文件，来适配该问题。
 
 adaptation.js
@@ -114,7 +119,7 @@ Failed to load config "fbjs" to extend from.
 Referenced from: /Users/wangyongqi/baidu/learn/debug-react-new/src/react/.eslintrc.js
 ```
 
-#### 关闭ESlint对fbjs,prettier插件的扩展
+#### 8.关闭ESlint对fbjs,prettier插件的扩展
 清空react源码项目下.eslintrc文件中的extends选项
 ```
 extends: [
@@ -133,7 +138,7 @@ Require stack:
 - /xxx/learn/debug-react-new/config/__placeholder__.js
 ```
 
-#### 安装eslint-plugin-no-for-of-loops插件
+#### 9.安装eslint-plugin-no-for-of-loops插件
 
 yarn add eslint-plugin-no-for-of-loops -D
 
@@ -145,7 +150,7 @@ Failed to compile.
 Attempted import error: 'unstable_flushAllWithoutAsserting' is not exported from 'scheduler' (imported as 'Scheduler').
 ```
 
-#### 修改scheduler/index.js文件
+#### 10.修改scheduler/index.js文件
 
 /src/react/packages/scheduler/index.js 修改为
 
@@ -205,7 +210,7 @@ Require stack:
 - /xxx/learn/debug-react-new/config/__placeholder__.js
 ```
 
-#### 安装eslint-plugin-react-internal
+#### 11.解决react-internal错误
 这是react在本地安装的，在源码的package中可以看到。但是安装之后依然会报错，这里决定删除这个插件，不进行安装。在debug-react-new/src/react/.eslintrc.js 中的plugins中将其删除。
 
 下面是安装本地react-internals。笔者这里没有安装，直接不使用该插件。
@@ -221,7 +226,9 @@ Failed to compile.
 Module not found: Can't resolve 'react/jsx-dev-runtime' in '/xxx/learn/debug-react-new/src'
 ```
 
-### 修复react/jsx-dev-runtime报错
+> 8-11中的错误都是react eslint中的错误，可以试试在webpack.config.js中删除eslint插件。
+
+#### 修复react/jsx-dev-runtime报错
 
 在webpack-config.js中可以看到hasJsxRuntime变量的取值过程，直接在函数中返回false.
 
@@ -298,6 +305,6 @@ export default function invariant(condition, format, a, b, c, d, e, f) {
 }
 ```
 
-至此，大功告成，终于没有错误了。后面就可以进行本地调试了。
+至此，大功告成，终于没有错误了。后面就可以针对源码进行断点调试或者打日志了。
 
 
