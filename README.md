@@ -228,7 +228,7 @@ Module not found: Can't resolve 'react/jsx-dev-runtime' in '/xxx/learn/debug-rea
 
 > 8-11中的错误都是react eslint中的错误，可以试试在webpack.config.js中删除eslint插件。
 
-#### 修复react/jsx-dev-runtime报错
+#### 12.修复react/jsx-dev-runtime报错
 
 在webpack-config.js中可以看到hasJsxRuntime变量的取值过程，直接在函数中返回false.
 
@@ -269,7 +269,7 @@ src/react/packages/react-reconciler/src/ReactFiberReconciler.js
 
 至此，命令行中不会报错误了。但是浏览器中会报错误，提示__DEV__没有定义。这个简单了，在DefinePlugin中定义就行。
 
-#### 设置DefinePlugin插件
+#### 13.设置DefinePlugin插件
 在/xxx/learn/debug-react-new/config/env.js中添加:
 ```
 const stringified = {
@@ -289,7 +289,7 @@ const stringified = {
 Uncaught Error: Internal React error: invariant() is meant to be replaced at compile time. There is no runtime version.
 ```
 
-#### 修改invariant.js
+#### 14.修改invariant.js
 /xxx/debug-react-new/src/react/packages/shared/invariant.js
 
 ```
