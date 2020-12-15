@@ -2,7 +2,7 @@
 
 工欲善其事，必先利其器。
 
-在学习raect源码时，如果能够在浏览器中单步调试，势必会加深理解。其实可以借助webpack的definePlugin插件将react等指向本地的目录，这样就不会使用node_modules中的react包。
+在学习raect源码时，如果能够在浏览器中单步调试，势必会加深理解。其实可以借助webpack的resolve.alias将react等指向本地的目录，这样就不会使用node_modules中的react包。
 从而可以在本地调试react源码。
 ### 本地调试react源码步骤
 #### 1. 生成react项目
@@ -116,7 +116,7 @@ export {
 Failed to compile.
 
 Failed to load config "fbjs" to extend from.
-Referenced from: /Users/wangyongqi/baidu/learn/debug-react-new/src/react/.eslintrc.js
+Referenced from: /xxx/baidu/learn/debug-react-new/src/react/.eslintrc.js
 ```
 
 #### 8.关闭ESlint对fbjs,prettier插件的扩展
